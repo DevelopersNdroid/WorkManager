@@ -6,10 +6,14 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 
+import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 public class MyWorker extends Worker {
+
+    public static final String KEY_TASK_OUTPUT = "key_task_output";
+
     public MyWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
@@ -34,8 +38,14 @@ public class MyWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        displayNotification("My Worker", "Hey I finished my work");
-        return Result.success();
+        Data data = getInputData();
+        String desc = data.getString(MainActivity.KEY_TASK_DESC);
+        displayNotification("My Worker", desc);
+        Data data1 = new Data.Builder()
+                .putString(KEY_TASK_OUTPUT, "Task finished successfully..!!")
+                .build();
+        return Result.success(data1);
+
     }
 
     private void displayNotification(String title, String task) {
